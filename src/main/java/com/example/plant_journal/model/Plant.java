@@ -21,6 +21,12 @@ public class Plant {
     // コンストラクタ（デフォルト）
     public Plant() {}
 
+    // 🌱 データが保存される前に `dateAdded` に現在の日付をセット
+    @PrePersist
+    protected void onCreate() {
+        this.dateAdded = LocalDate.now();
+    }
+
     // ゲッター・セッター
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
