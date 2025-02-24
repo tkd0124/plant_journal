@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>植物一覧</title>
+</head>
+<body>
+<h1>🌿 植物の一覧</h1>
+
+<!-- 検索や一覧表示部分 -->
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>名前</th>
+        <th>種類</th>
+        <th>操作</th> <!-- 削除用の列 -->
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="plant : ${plants}">
+        <td th:text="${plant.id}"></td>
+        <td th:text="${plant.name}"></td>
+        <td th:text="${plant.type}"></td>
+        <td>
+            <!-- 削除フォーム：ViewController の /delete にPOSTリクエストを送る -->
+            <form th:action="@{/delete}" method="post" onsubmit="return confirm('本当に削除しますか？');">
+                <input type="hidden" name="id" th:value="${plant.id}" />
+                <button type="submit">削除</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>🌱 新しい植物を登録</h2>
+<!-- 登録フォーム。ここは既にフォームバッキングオブジェクト "plant" がセットされている前提 -->
+<form th:action="@{/}" method="post" th:object="${plant}">
+    <label for="name">名前:</label>
+    <input type="text" id="name" th:field="*{name}" />
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;"></span>
+    <br/>
+
+    <label for="type">種類:</label>
+    <input type="text" id="type" th:field="*{type}" />
+    <span th:if="${#fields.hasErrors('type')}" th:errors="*{type}" style="color:red;"></span>
+    <br/>
+
+    <button type="submit">登録</button>
+</form>
+</body>
+</html>
