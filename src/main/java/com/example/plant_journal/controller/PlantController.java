@@ -1,70 +1,62 @@
-//package com.example.plant_journal.controller;
-//
-//public class PlantController {
-//}
 package com.example.plant_journal.controller;
 
 import com.example.plant_journal.model.Plant;
-import com.example.plant_journal.repository.PlantRepository;
+import com.example.plant_journal.service.PlantService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
-@RestController
+@Controller
 @RequestMapping("/plants")
 public class PlantController {
-    private final PlantRepository plantRepository;
+    private final PlantService plantService;
 
-    public PlantController(PlantRepository plantRepository) {
-        this.plantRepository = plantRepository;
+    public PlantController(PlantService plantService) {
+        this.plantService = plantService;
     }
 
     // 🌿 植物を登録する
     @PostMapping
-    public ResponseEntity<Plant> addPlant(@RequestBody Plant plant) {
-        Plant savedPlant = plantRepository.save(plant);
-        return ResponseEntity.ok(savedPlant);
+    public String addPlant(@Valid @ModelAttribute Plant plant, org.springframework.validation.BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("plants", plantService.getAllPlants());
+            return "index"; // エラーがある場合、一覧画面に戻す
+        }
+
+        plantService.addPlant(plant); // データを保存
+        return "redirect:/";
     }
+
 
     // 🌿 植物の一覧を取得する
     @GetMapping
     public ResponseEntity<List<Plant>> getAllPlants() {
-        List<Plant> plants = plantRepository.findAll();
+        List<Plant> plants = plantService.getAllPlants();
         return ResponseEntity.ok(plants);
     }
 
     // 🌿 特定の植物を取得する
     @GetMapping("/{id}")
     public ResponseEntity<Plant> getPlantById(@PathVariable Long id) {
-        Optional<Plant> plant = plantRepository.findById(id);
-        return plant.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Plant plant = plantService.getPlantById(id);
+        return ResponseEntity.ok(plant);
     }
 
     // 🌿 植物の情報を更新する
     @PutMapping("/{id}")
     public ResponseEntity<Plant> updatePlant(@PathVariable Long id, @RequestBody Plant updatedPlant) {
-        return plantRepository.findById(id)
-                .map(plant -> {
-                    plant.setName(updatedPlant.getName());
-                    plant.setType(updatedPlant.getType());
-                    plant.setDateAdded(updatedPlant.getDateAdded());
-                    plant.setNotes(updatedPlant.getNotes());
-                    plantRepository.save(plant);
-                    return ResponseEntity.ok(plant);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        Plant plant = plantService.updatePlant(id, updatedPlant);
+        return ResponseEntity.ok(plant);
     }
 
     // 🌿 植物を削除する
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePlant(@PathVariable Long id) {
-        if (plantRepository.existsById(id)) {
-            plantRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        plantService.deletePlant(id);
+        return ResponseEntity.noContent().build();
     }
 }
