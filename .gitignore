@@ -60,3 +60,6 @@ replay_pid*
 .springBeans
 .sts4-cache
 
+# AWS
+.env
+

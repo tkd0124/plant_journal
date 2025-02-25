@@ -64,7 +64,29 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		<!--Spring Bootに.envを読み込ませるために追加-->
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>java-dotenv</artifactId>
+			<version>5.2.2</version>
+		</dependency>
+		<!-- JUnit 5 の依存関係（バージョンを 5.10.2 に更新）-->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.2</version> <!-- 最新バージョン -->
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
+	<!--  dotenv-java を jitpack.io から取得する JitPack リポジトリを追加-->
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
 
 	<build>
 		<plugins>
